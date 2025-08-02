@@ -1,13 +1,43 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { CodeSnippetCard } from "@/components/code-snippet-card"
 import { SearchBar } from "@/components/search-bar"
-import { codeSnippets, categories } from "@/lib/data"
+import { fetchSnippets, fetchCategories, categories, type CodeSnippet } from "@/lib/data"
 import Link from "next/link"
 import { Code2, Zap, Search } from "lucide-react"
 
 export default function HomePage() {
+  const [codeSnippets, setCodeSnippets] = useState<CodeSnippet[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function loadSnippets() {
+      try {
+        const snippets = await fetchSnippets({ limit: 6 })
+        setCodeSnippets(snippets)
+      } catch (error) {
+        console.error('Failed to load snippets:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadSnippets()
+  }, [])
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">
+          <div className="animate-spin h-8 w-8 border-2 border-cyan-400 border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-gray-400">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Hero Section */}
@@ -97,7 +127,7 @@ export default function HomePage() {
         <h2 className="text-3xl font-bold text-white mb-8 text-center">Latest Code Snippets</h2>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {codeSnippets.slice(0, 6).map((snippet, index) => (
-            <CodeSnippetCard key={snippet.id} snippet={snippet} index={index} />
+            <CodeSnippetCard key={snippet._id} snippet={snippet} index={index} />
           ))}
         </div>
 

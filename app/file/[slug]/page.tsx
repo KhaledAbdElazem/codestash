@@ -1,26 +1,58 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { codeSnippets } from "@/lib/data"
+import { fetchSnippetById, type CodeSnippet } from "@/lib/data"
 import { getLanguageColor, getCategoryColor, copyToClipboard } from "@/lib/utils"
 import { ArrowLeft, Copy, Check, ExternalLink } from "lucide-react"
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import ReactMarkdown from "react-markdown"
 
 interface FilePageProps {
-  params: {
+  params: Promise<{
     slug: string
-  }
+  }>
 }
 
 export default function FilePage({ params }: FilePageProps) {
   const [copied, setCopied] = useState(false)
-  const snippetId = Number.parseInt(params.slug)
-  const snippet = codeSnippets.find((s) => s.id === snippetId)
+  const [snippet, setSnippet] = useState<CodeSnippet | null>(null)
+  const [loading, setLoading] = useState(true)
 
-  if (!snippet || !snippet.markdownContent) {
+  useEffect(() => {
+    async function loadSnippet() {
+      try {
+        const resolvedParams = await params
+        const fetchedSnippet = await fetchSnippetById(resolvedParams.slug)
+        if (fetchedSnippet && fetchedSnippet.markdownContent) {
+          setSnippet(fetchedSnippet)
+        } else {
+          notFound()
+        }
+      } catch (error) {
+        console.error('Failed to load snippet:', error)
+        notFound()
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadSnippet()
+  }, [params])
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-8 max-w-4xl">
+        <div className="text-center">
+          <div className="animate-spin h-8 w-8 border-2 border-cyan-400 border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-gray-400">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!snippet) {
     notFound()
   }
 

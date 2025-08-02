@@ -79,7 +79,7 @@ export function CodeSnippetCard({ snippet, index = 0 }: CodeSnippetCardProps) {
             </motion.button>
 
             {snippet.markdownContent && (
-              <Link href={`/file/${snippet.id}`}>
+              <Link href={`/file/${snippet._id}`}>
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
