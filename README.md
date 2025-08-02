@@ -1,6 +1,6 @@
 # 🚀 CodeStash
 
-A modern, cyberpunk-themed web application for browsing, searching, and copying code snippets and scripts. Built with Next.js 15, TypeScript, and Tailwind CSS.
+A modern, cyberpunk-themed web application for browsing, searching, and copying code snippets and scripts. Built with Next.js 15, TypeScript, TailwindCSS, and MongoDB Atlas.
 
 ![CodeStash Preview](https://via.placeholder.com/1200x600/1f2937/06b6d4?text=CodeStash+Preview)
 
@@ -38,7 +38,7 @@ A modern, cyberpunk-themed web application for browsing, searching, and copying 
 
 1. **Clone the repository**
    \`\`\`bash
-   git clone https://github.com/your-username/codestash.git
+   git clone https://github.com/KhaledAbdElazem/codestash.git
    cd codestash
    \`\`\`
 
@@ -51,7 +51,15 @@ A modern, cyberpunk-themed web application for browsing, searching, and copying 
    pnpm install
    \`\`\`
 
-3. **Run the development server**
+3. **Set up environment variables**
+   Create a \`.env.local\` file in the root directory:
+   \`\`\`env
+   MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/codestash
+   \`\`\`
+   
+   **Note**: The app includes fallback mock data, so it will work even without MongoDB configured.
+
+4. **Run the development server**
    \`\`\`bash
    npm run dev
    # or
@@ -60,7 +68,7 @@ A modern, cyberpunk-themed web application for browsing, searching, and copying 
    pnpm dev
    \`\`\`
 
-4. **Open your browser**
+5. **Open your browser**
    Navigate to [http://localhost:3000](http://localhost:3000)
 
 ## 📁 Project Structure
