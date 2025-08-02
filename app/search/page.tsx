@@ -5,7 +5,7 @@ import { motion } from "framer-motion"
 import { useSearchParams } from "next/navigation"
 import { CodeSnippetCard } from "@/components/code-snippet-card"
 import { SearchBar } from "@/components/search-bar"
-import { codeSnippets, languages, categories } from "@/lib/data"
+import { fetchSnippets, fetchLanguages, categories, languages, type CodeSnippet } from "@/lib/data"
 import { Filter, X } from "lucide-react"
 
 export default function SearchPage() {
@@ -16,6 +16,24 @@ export default function SearchPage() {
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([])
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const [showFilters, setShowFilters] = useState(false)
+  const [snippets, setSnippets] = useState<CodeSnippet[]>([])
+  const [loading, setLoading] = useState(true)
+
+  // Load data on component mount
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const fetchedSnippets = await fetchSnippets()
+        setSnippets(fetchedSnippets)
+      } catch (error) {
+        console.error('Failed to load search data:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadData()
+  }, [])
 
   // Update query when URL changes
   useEffect(() => {
@@ -25,7 +43,7 @@ export default function SearchPage() {
 
   // Filter snippets based on search criteria
   const filteredSnippets = useMemo(() => {
-    return codeSnippets.filter((snippet) => {
+    return snippets.filter((snippet) => {
       // Text search
       const matchesQuery =
         !query ||
@@ -42,7 +60,7 @@ export default function SearchPage() {
 
       return matchesQuery && matchesLanguage && matchesCategory
     })
-  }, [query, selectedLanguages, selectedCategories])
+  }, [snippets, query, selectedLanguages, selectedCategories])
 
   const toggleLanguage = (language: string) => {
     setSelectedLanguages((prev) => (prev.includes(language) ? prev.filter((l) => l !== language) : [...prev, language]))
@@ -60,6 +78,17 @@ export default function SearchPage() {
   }
 
   const hasActiveFilters = selectedLanguages.length > 0 || selectedCategories.length > 0
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">
+          <div className="animate-spin h-8 w-8 border-2 border-cyan-400 border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-gray-400">Loading search data...</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -161,7 +190,7 @@ export default function SearchPage() {
         {filteredSnippets.length > 0 ? (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {filteredSnippets.map((snippet, index) => (
-              <CodeSnippetCard key={snippet.id} snippet={snippet} index={index} />
+              <CodeSnippetCard key={snippet._id} snippet={snippet} index={index} />
             ))}
           </div>
         ) : (

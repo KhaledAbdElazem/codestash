@@ -14,6 +14,20 @@ export const categories = [
   "utils"
 ]
 
+// Static languages for navigation
+export const languages = [
+  "javascript",
+  "typescript",
+  "python",
+  "css",
+  "html",
+  "bash",
+  "yaml",
+  "json",
+  "sql",
+  "markdown"
+]
+
 export interface CodeSnippet {
   _id: string
   title: string
